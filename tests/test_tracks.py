@@ -24,6 +24,14 @@ def test_static_lookalike_dropped():
     assert link([bud], FPS, STEP) == []
 
 
+def test_still_thing_tracked_in_short_windows_dropped():
+    # SAM 3 fires on a bud now and then: tracked 5 s at a time, never 8 s in one go
+    pieces = [tl(0, range(f, f + 150, STEP), [500] * 75, [400] * 75) for f in range(0, 3000, 600)]
+    bee = tl(0, range(3000, 3060, STEP), np.linspace(100, 200, 30), [300] * 30)
+    ins = link(pieces + [bee], FPS, STEP)
+    assert len(ins) == 1 and ins[0].start == 3000
+
+
 def test_gap_bridged_into_one_insect():
     a = tl(0, range(0, 60, STEP), np.linspace(100, 200, 30), [300] * 30)
     b = tl(0, range(90, 150, STEP), np.linspace(230, 330, 30), [300] * 30)  # back after 1 s, 30 px on

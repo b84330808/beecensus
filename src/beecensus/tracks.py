@@ -29,6 +29,7 @@ class Insect:
     box: np.ndarray  # N x 4
     score: np.ndarray
     parts: int  # tracklets merged into this insect
+    sam: bool = True  # SAM 3 saw it at least once (False: only moving blobs, see motion.py)
 
     @property
     def start(self) -> int:
@@ -42,6 +43,26 @@ class Insect:
 def is_static(t: Tracklet, fps: float = 30.0) -> bool:
     return (len(t.cx) >= MIN_DETS and (t.frame[-1] - t.frame[0]) / fps >= STATIC_MIN_S
             and np.std(t.cx) < STATIC_PX and np.std(t.cy) < STATIC_PX)
+
+
+def drop_still_spots(insects: list[Insect], fps: float) -> list[Insect]:
+    """Drop insects that never move and keep coming back to one spot, STATIC_MIN_S in all.
+
+    Tracking runs only in short windows around confirmed sightings, so a bud that SAM 3 fires on
+    now and then comes back as many short tracks at one place, each too short for is_static.
+    (A resting butterfly goes too: the census counts visits, not insects sitting still.)
+    """
+    spots: list[list[Insect]] = []
+    for i in insects:
+        if np.std(i.cx) >= STATIC_PX or np.std(i.cy) >= STATIC_PX:
+            continue
+        s = next((s for s in spots if np.hypot(np.mean(s[0].cx) - np.mean(i.cx), np.mean(s[0].cy) - np.mean(i.cy)) < 2 * STATIC_PX), None)
+        if s is None:
+            spots.append([i])
+        else:
+            s.append(i)
+    drop = {id(i) for s in spots if sum(i.end - i.start for i in s) / fps >= STATIC_MIN_S for i in s}
+    return [i for i in insects if id(i) not in drop]
 
 
 def _dup(a: Tracklet, b: Tracklet, tol: int) -> bool:
@@ -108,7 +129,9 @@ def link(tracklets: list[Tracklet], fps: float, step: int) -> list[Insect]:
                     rows[f] = (t.cx[k], t.cy[k], t.area[k], t.box[k], f, t.score[k])
         r = [rows[f] for f in sorted(rows)]
         insects.append(Insect(0, np.array([x[4] for x in r]), np.array([x[0] for x in r]), np.array([x[1] for x in r]),
-                              np.array([x[2] for x in r]), np.array([x[3] for x in r]), np.array([x[5] for x in r]), len(parts)))
+                              np.array([x[2] for x in r]), np.array([x[3] for x in r]), np.array([x[5] for x in r]), len(parts),
+                              any(t.tile >= 0 for t in parts)))
+    insects = drop_still_spots(insects, fps)
     insects.sort(key=lambda s: s.start)
     for k, s in enumerate(insects):
         s.id = k + 1

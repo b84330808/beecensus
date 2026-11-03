@@ -68,9 +68,11 @@ def compare(res: dict) -> dict:
         return hit, ids
 
     delta = max(range(-60, 61, step), key=lambda d: sum(match(t["pts"], d)[0] for t in pt)) if pt else 0
+    one_s = int(round(res["fps"]))
     rows, matched = [], set()
     for t in pt:
-        hit, ids = match(t["pts"], delta)
+        # file names give each track's start only to the second, so align each track within one second of the video offset
+        hit, ids = max((match(t["pts"], d) for d in range(delta - one_s, delta + one_s + 1, step)), key=lambda m: m[0])
         matched |= ids
         rows.append({"kind": t["kind"], "sec": t["sec"], "points": len(t["pts"]), "hits": hit, "found": hit >= MIN_HITS,
                      "our_ids": sorted(ids), "flowers": len(t["flowers"])})

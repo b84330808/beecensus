@@ -16,6 +16,10 @@ get T7 1290855022 1175732714
 get T1 5735264729 1071978957
 get T6 33 1290854885
 get T5 10076030228 1314031553
+get T2 6807243790 1011955578   # held out: not used while tuning
+get T3 7819199472 1316061857
+get T9 3726617258 1022708929
+get T10 4749326292 985938332
 [ -d "$DATA/yolo_testing" ] || { python -I fetch_zip_prefix.py $YOLO 330000000 "$DATA/yolo_tmp" && mv "$DATA/yolo_tmp/testing" "$DATA/yolo_testing"; }
 [ -d "$DATA/traj/Extracted_Tracks" ] || { curl -sL -o "$DATA/traj.zip" $TRAJ && (cd "$DATA/traj" && unzip -q ../traj.zip); }
 echo done
