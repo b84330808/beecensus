@@ -63,7 +63,7 @@ with gr.Blocks(title="BeeCensus") as demo:
         with gr.Column(scale=1):
             ex = gr.Dropdown(list(_examples()), value=next(iter(_examples()), None), label="Saved survey (Monash strawberry farm, CC BY 4.0)")
             ex_btn = gr.Button("Show saved survey", variant="primary")
-            gr.Markdown("**Or run your own** (about 2–4 min of GPU per minute of footage with insects)")
+            gr.Markdown("**Or run your own** (about 8–10 min on a 16 GB consumer GPU per minute of footage; try a short clip first)")
             up = gr.Video(label="Survey video", sources=["upload"])
             with gr.Row():
                 t0 = gr.Number(0, label="from (s)")
