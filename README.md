@@ -102,4 +102,4 @@ MIT (code). The Monash footage and labels are CC BY 4.0 and are not included; `t
 
 - Footage and labels: Ratnayake, M.N., Amarathunga, D.C., Zaman, A., Dyer, A.G., Dorin, A. (2022). *Spatial Monitoring and Insect Behavioural Analysis Dataset*. Monash University. https://doi.org/10.26180/21533760 (CC BY 4.0). Polytrack: Ratnayake et al., *Spatial Monitoring and Insect Behavioural Analysis Using Computer Vision for Precision Pollination*, IJCV 2022.
 - Models: Meta SAM 3 (`facebook/sam3`), Muse Spark Open (Meta, served by Baseten).
-- Built for the Meta Global AI Developer Hackathon 2026.
+- Built during the Meta Global AI Developer Hackathon 2026 (Oct 27 – Nov 4): all code in this repository was written during the event.
